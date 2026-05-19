@@ -5,6 +5,10 @@ import useBooking from "@/hook/useBooking";
 import Image from "next/image";
 import { LuMapPin, LuUsers, LuClock } from "react-icons/lu";
 import { FaRegCalendar } from "react-icons/fa";
+import { Button } from "@heroui/react";
+import { Delete } from "lucide-react";
+import { DeleteRoomBookingByAlert } from "./shared/DeleteRoomBookingByAlert";
+import { EditRoomInfoByModal } from "./shared/EditRoomInfoByModal";
 
 const RoomDetailsClient = ({ room }) => {
 
@@ -12,7 +16,7 @@ const RoomDetailsClient = ({ room }) => {
   if (!room) return <p className="text-center text-gray-500">Loading...</p>;
 
   const {
-    imageUrl, roomName, roomType, floor,
+    _id, imageUrl, roomName, roomType, floor,
     availableFrom, availableUntil,
     capacity, hourlyRate, description,
   } = room;
@@ -92,7 +96,13 @@ const RoomDetailsClient = ({ room }) => {
                 </div>
               </div>
             </div>
+       
           </div>
+               <div className=" flex justify-center items-center gap-3 mt-6">
+                <EditRoomInfoByModal room={room}  />
+
+                <DeleteRoomBookingByAlert room={room}/>
+            </div>
         </div>
 
         {/* Right Side — ✅ Pass full room object */}

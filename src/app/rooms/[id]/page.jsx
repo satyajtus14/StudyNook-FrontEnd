@@ -1,5 +1,9 @@
+
+import { EditRoomInfoByModal } from "@/components/shared/EditRoomInfoByModal";
 import ErrorPage from "./ErrorPage";
 import RoomDetailsClient from "@/components/RoomDetailsClient";
+import { DeleteRoomBookingByAlert } from "@/components/shared/DeleteRoomBookingByAlert";
+
 
 
 
@@ -33,14 +37,17 @@ const RoomDetailsPage = async ({ params,error, reset }) => {
 
   return (
          <div className="max-w-7xl mx-auto px-4 py-10">
-  {/*     <div className="flex justify-end gap-2 mt-5 mb-3">
-        <EditDestinationByModal  destination={destination}/>  
-        <DeleteDestinationByAlert  destination={destination} />    
-      </div> */}
-      
+              {/* Edit and Delete buttons */}
+  {/*    <div className="flex justify-end gap-2 mt-5 mb-3">
+        <EditRoomInfoByModal  room={roomData}/>  
+        <DeleteRoomBookingByAlert  room={roomData} />    
+      </div>
+  */}
+
        {/* Pass data down to client component */}
-     <RoomDetailsClient room={roomData} />;
- 
+     <RoomDetailsClient room={roomData} />
+        
+
       </div>
    
   );
