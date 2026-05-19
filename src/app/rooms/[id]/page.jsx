@@ -1,5 +1,7 @@
-import React from "react";
 import ErrorPage from "./ErrorPage";
+import RoomDetailsClient from "@/components/RoomDetailsClient";
+
+
 
 
 const RoomDetailsPage = async ({ params,error, reset }) => {
@@ -11,7 +13,7 @@ const RoomDetailsPage = async ({ params,error, reset }) => {
   const roomData = await res.json();
   console.log(roomData);
 
-
+   
     // ✅ Check if the request actually succeeded
   if (!res.ok) {
     // const error = new Error("Failed to fetch room data");
@@ -27,31 +29,20 @@ const RoomDetailsPage = async ({ params,error, reset }) => {
     ); // if destination not found
   }
 
-  const {
-    _id,
-    imageUrl,
-    roomName,
-    roomType,
-    floor,
-    availableFrom,
-    availableUntil,
-    capacity,
-    hourlyRate,
-    amenities = [],
-  } = roomInfo;
 
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <h2 className="text-xl font-bold mb-2">{roomData.name}</h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {roomData.description}
-          </p>
-        </div>
+         <div className="max-w-7xl mx-auto px-4 py-10">
+  {/*     <div className="flex justify-end gap-2 mt-5 mb-3">
+        <EditDestinationByModal  destination={destination}/>  
+        <DeleteDestinationByAlert  destination={destination} />    
+      </div> */}
+      
+       {/* Pass data down to client component */}
+     <RoomDetailsClient room={roomData} />;
+ 
       </div>
-    </div>
+   
   );
 };
 

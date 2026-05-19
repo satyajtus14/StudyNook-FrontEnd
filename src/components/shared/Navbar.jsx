@@ -71,11 +71,13 @@ const Navbar = () => {
                 // style={{ mixBlendMode: "multiply" }}
                 
               />
+              
             </div>
             {/* ✅ Logo text: gray-800 in light, white in dark */}
             <span className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
               <div className="flex items-center">
-                StudyN<FaRegMehRollingEyes className="text-black animate_animated animate-bounce animate-delay-5s 5s"/><FaRegMehRollingEyes  className="text-black animate_animated animate-bounce animate-delay-5s 5s"/>k
+                StudyN<FaRegMehRollingEyes className="text-black animate_animated animate-bounce animate-delay-5s 5s"/>
+                <FaRegMehRollingEyes  className="text-black animate_animated animate-bounce animate-delay-5s 5s"/>k
                 </div>
             </span>
           </Link>

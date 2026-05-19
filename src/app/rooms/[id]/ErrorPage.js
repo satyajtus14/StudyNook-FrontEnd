@@ -13,7 +13,7 @@ const ErrorPage = ({ error, reset }) => {
     }, [error]);
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-olive-800 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
             <div className="max-w-lg text-center">
 
                 <h1 className="text-7xl font-bold text-red-500">
@@ -25,23 +25,25 @@ const ErrorPage = ({ error, reset }) => {
                 </h2>
 
                 <p className="mt-4 text-gray-400">
-                    An unexpected error occurred while loading this page.
+                    {error?.message || "An unexpected error occurred while loading this page."}
                 </p>
 
                 <div className="mt-8 flex justify-center gap-4">
 
+                    {/* ✅ Fixed: color="danger" is correct for HeroUI */}
                     <Button
                         onPress={() => reset()}
+                      
                         variant="danger"
-                        className="px-6 py-3 text-white rounded-xl transition"
+                        className="px-6 py-3 rounded-xl"
                     >
                         Try Again
                     </Button>
 
+                   
                     <Link
                         href="/"
-                        variant="primary"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-xl transition"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-xl transition hover:bg-blue-700 flex justify-center items-center"
                     >
                         Go Home
                     </Link>

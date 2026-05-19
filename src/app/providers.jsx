@@ -8,6 +8,7 @@ export function Providers({ children }) {
     defaultTheme="light"
      enableSystem={false}
     disableTransitionOnChange
+    scriptProps={{ "data-cfasync": "false" }} // ✅ Fixes the script tag warning
     >
       {children}
     </ThemeProvider>
