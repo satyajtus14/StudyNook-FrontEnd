@@ -1,14 +1,19 @@
 "use client";
 
 import useBooking from "@/hook/useBooking"; // ✅ import hook here only
+import { authClient } from "@/lib/auth-client";
 import { LuClock } from "react-icons/lu";
 
 const BookingCard = ({ room }) => {
 
+     const { data: session } = authClient.useSession();
+      const user = session?.user;
+      console.log("User:", user);
+
   // ✅ Guard check before anything else
   if (!room) return <p className="text-center text-gray-500">Loading...</p>;
 
-  const { roomName, hourlyRate, availableFrom, availableUntil } = room;
+  const {roomName, hourlyRate, availableFrom, availableUntil } = room;
 
   // ✅ All state and logic comes from useBooking
   const {
@@ -18,7 +23,7 @@ const BookingCard = ({ room }) => {
     totalHours, totalCost,
     error,
     handleBooking
-  } = useBooking(room);
+  } = useBooking(room, user); // ✅ pass user to the hook
 
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-lg p-6 sticky top-24 space-y-5">

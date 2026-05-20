@@ -54,7 +54,14 @@ const RoomDetailsClient = ({ room }) => {
           {/* Description */}
           <div className="bg-white border-2 border-gray-300 dark:bg-gray-900 shadow-md rounded-2xl p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
-              About This Room
+              About Study Room Booking Confirmation Details
+            </h2>
+
+          </div>
+
+          {/* Room Info */}
+          <div className="bg-white border-2 border-gray-300 dark:bg-gray-900 shadow-md rounded-2xl p-6">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
             </h2>
             <p className="text-gray-600 dark:text-gray-400 leading-8">
               {description}

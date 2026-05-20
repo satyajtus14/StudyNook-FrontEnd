@@ -1,0 +1,175 @@
+"use client"; // ✅ authClient.useSession() needs this
+
+import React from 'react';
+import { FaRegEye } from "react-icons/fa";
+import { SlCalender } from "react-icons/sl";
+import { LuClock, LuHash } from "react-icons/lu";
+import { CancelBookingItem } from "@/components/shared/CancelBookingItem";
+import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+
+const MyBookingsClientPage = ({ initialBookings = [] }) => {
+  const { data: session,isPending } = authClient.useSession(); // ✅ correct client-side way
+  const user = session?.user;
+
+  const [bookings, setBookings] = useState(initialBookings);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isPending) return; //  wait for session to finish loading
+
+    // Only fetch when user is available
+    if (!user?.id) {
+      setLoading(false); // no user = stop loading, show empty state
+      return;
+    } 
+
+    const fetchBookings = async () => {
+        console.log("=== FETCH DEBUG ===");
+        console.log("user.id:", user.id);
+        console.log("Full URL:", `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`);
+
+
+      try {
+        // ?userId= query param, not /bookings/:id
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`
+        );
+
+        if (!res.ok) {
+          setError("Failed to load bookings.");
+          return;
+        }
+
+        const data = await res.json();
+        setBookings(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setError("Something went wrong.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user?.id, isPending]); // re-runs when user loads
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <p className="text-center text-gray-400 py-20">Loading bookings...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-10">
+        <p className="text-center text-red-400 py-20">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+
+      {/* Header */}
+      <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
+        My Bookings
+      </h1>
+      <p className="text-gray-400 mt-1 mb-8 text-sm sm:text-base">
+        Manage and view your upcoming study plans
+      </p>
+
+      {/* Empty state */}
+      {bookings.length === 0 && (
+        <p className="text-center text-gray-400 py-20">
+          You have no bookings yet.
+        </p>
+      )}
+
+      {/* Booking Cards */}
+      <div className="flex flex-col gap-4">
+        {bookings.map((booking) => (
+          <div
+            key={booking._id}
+            className="flex flex-col sm:flex-row border-2 border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900"
+          >
+            {/* Left — Room Image */}
+            {booking.imageUrl ? (
+              <Image
+                src={booking.imageUrl}
+                alt={booking.roomName}
+                width={200}
+                height={160}
+                className="object-cover w-full sm:w-[200px] h-48 sm:h-auto shrink-0"
+              />
+            ) : (
+              <div className="w-full sm:w-[200px] h-48 sm:h-auto bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                <span className="text-gray-400 text-sm">No image</span>
+              </div>
+            )}
+
+            {/* Right — Booking Details */}
+            <div className="flex flex-col justify-between w-full p-5">
+              <div>
+                {/* Status Badge */}
+                <span
+                  className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full mb-3
+                    ${booking.status === "confirmed"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-orange-100 text-orange-600"
+                    }`}
+                >
+                  {booking.status === "confirmed" ? "✓ Confirmed" : "⏳ Pending"}
+                </span>
+
+                {/* Room Name */}
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                  {booking.roomName}
+                </h2>
+
+                {/* Date */}
+                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
+                  <SlCalender /> Date: {booking.date}
+                </p>
+
+                {/* Time + Hours */}
+                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
+                  <LuClock />
+                  {booking.startTime} – {booking.endTime}
+                  &nbsp;·&nbsp; {booking.totalHours} hrs
+                </p>
+
+                {/* Booking ID */}
+                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
+                  <LuHash /> Booking ID: {booking._id?.slice(0, 8)}
+                </p>
+              </div>
+
+              {/* Price + Action Buttons */}
+              <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
+                <span className="text-2xl font-bold text-cyan-500">
+                  ${booking.totalCost?.toFixed(2)}
+                </span>
+
+                <div className="flex gap-3">
+                  <CancelBookingItem bookingId={booking._id} />
+                  <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                    <FaRegEye /> View
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default MyBookingsClientPage;

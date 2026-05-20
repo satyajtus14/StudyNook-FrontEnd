@@ -11,7 +11,6 @@ import { FaRegMehRollingEyes } from "react-icons/fa";
 import "animate.css";
 import { authClient } from "@/lib/auth-client";
 
-
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
 
@@ -41,16 +40,14 @@ export function ThemeSwitch() {
   );
 }
 const Navbar = () => {
-  
-    const { data: session } = authClient.useSession();
+  const { data: session } = authClient.useSession();
 
+  // console.log("Session:", session);
+  const user = session?.user;
 
-    console.log("Session:", session);
-    const user = session?.user;
-   
-console.log("User:", user);
-console.log("User image:", user?.image);
-   
+  // console.log("User:", user);
+  // console.log("User image:", user?.image);
+
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -76,8 +73,6 @@ console.log("User image:", user?.image);
                 alt={"StudyNook Logo"}
                 width={120}
                 height={120}
-                
-               
               />
 
               <span className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
@@ -119,20 +114,24 @@ console.log("User image:", user?.image);
                 src={user.image || "/assets/default-avatar.png"} 
                 alt={user.name || "User Avatar"} 
                  /> */}
-                 <Avatar>
-        <Avatar.Image 
-        alt={user.name || "User Avatar"}  
-        src={user.image || "/assets/default-avatar.png"} 
-         />
-        
-      </Avatar>
-      
-                 <span className="text-sm font-medium text-gray-700 dark:text-white">
+                <Avatar>
+                  <Avatar.Image
+                    alt={user.name || "User Avatar"}
+                    src={user.image || "/assets/default-avatar.png"}
+                  />
+                  <Avatar.Fallback>{user.name?.charAt(0) || "U"}</Avatar.Fallback>
+                </Avatar>
+
+                <span className="text-sm font-semibold text-blue-900 dark:text-white">
                   {user.name || "User"}
                 </span>
-                 {/* ✅ Logout: red outlined in light, white outlined in dark */}
-                 <Button variant="bordered" color="danger" size="sm"
-                 onClick={() => authClient.signOut()} >
+                {/* ✅ Logout: red outlined in light, white outlined in dark */}
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => authClient.signOut()}
+                  className="font-semibold border-2 border-red-500 text-white hover:bg-red-800 hover:text-white dark:border-white dark:text-white dark:hover:bg-gray-100 dark:hover:text-olive-600 transition-colors"
+                >
                   Logout
                 </Button>
               </>
@@ -141,7 +140,7 @@ console.log("User image:", user?.image);
                 {/* ✅ Login: normal in light, white outlined in dark */}
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-semibold border border-gray-200 dark:border-white text-gray-700 dark:text-white rounded-md hover:bg-gray-50 dark:hover:bg-olive-700 transition-colors"
+                  className="px-4 py-2 text-sm font-semibold border border-gray-200 dark:border-white text-gray-700 dark:text-white rounded-md hover:bg-gray-600 hover:text-white dark:hover:bg-olive-700 transition-colors"
                 >
                   Login
                 </Link>
@@ -212,5 +211,4 @@ console.log("User image:", user?.image);
   );
 };
 
-export default Navbar;  
-
+export default Navbar;

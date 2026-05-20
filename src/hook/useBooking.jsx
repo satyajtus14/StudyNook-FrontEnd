@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 
-const useBooking = (room) => {
+const useBooking = (room,user) => {
   const { id, roomName, hourlyRate, availableFrom, availableUntil } = room;
 
   const [date, setDate] = useState("");
@@ -65,15 +65,21 @@ const useBooking = (room) => {
     if (!validateBooking()) return;
 
     const bookingData = {
-      roomId: id,
-      roomName,
-      date,
-      startTime,
-      endTime,
-      totalHours,
-      totalCost,
-    };
 
+      userId: user?.id || "anonymous", // Use user ID if available, otherwise "anonymous" 
+      userName: user?.name || "Anonymous User",
+      userEmail: user?.email || "No email provided",
+      userImage: user?.image || null,
+      roomId: id,
+      imageUrl: room.imageUrl || null,
+      roomName: roomName,
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
+      totalHours: totalHours,
+      totalCost: totalCost,
+    };
+    console.log("Booking data to send:", bookingData);
     try {
       const response = await fetch("http://localhost:5002/bookings", {
         method: "POST",
@@ -92,7 +98,7 @@ const useBooking = (room) => {
 
     } catch (error) {
       console.error("Booking error:", error);
-      toast.error("Something went wrong.");
+      toast.error("Something went wrong on booking.");
     }
   };
 

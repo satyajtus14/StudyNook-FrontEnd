@@ -1,15 +1,12 @@
-import React from 'react';
+import MyBookingsClientPage from "./MyBookingsClientPage";
 
 export const metadata = {
   title: "StudyNook | My Bookings",
 };
 
+//  No session check needed — client handles it
 const MyBookingsPage = () => {
-    return (
-        <div>
-            My Booking Page
-        </div>
-    );
+  return <MyBookingsClientPage />;
 };
 
 export default MyBookingsPage;
