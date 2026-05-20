@@ -43,8 +43,14 @@ export function ThemeSwitch() {
 const Navbar = () => {
   
     const { data: session } = authClient.useSession();
-  const user = session?.user;
 
+
+    console.log("Session:", session);
+    const user = session?.user;
+   
+console.log("User:", user);
+console.log("User image:", user?.image);
+   
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -66,10 +72,11 @@ const Navbar = () => {
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center">
               <Image
-                src={"/assets/studyNook.png"}
+                src={"/assets/logo.png"}
                 alt={"StudyNook Logo"}
                 width={120}
                 height={120}
+                
                
               />
 
@@ -107,11 +114,24 @@ const Navbar = () => {
             <ThemeSwitch />
             {user ? (
               <>
-                <Avatar 
-                  src={user?.image} 
-                  alt={user?.name}
-                className="w-9 h-9" />
-                <Button variant="bordered" color="danger" size="sm"
+                {/* <Avatar 
+                className="w-9 h-9" 
+                src={user.image || "/assets/default-avatar.png"} 
+                alt={user.name || "User Avatar"} 
+                 /> */}
+                 <Avatar>
+        <Avatar.Image 
+        alt={user.name || "User Avatar"}  
+        src={user.image || "/assets/default-avatar.png"} 
+         />
+        
+      </Avatar>
+      
+                 <span className="text-sm font-medium text-gray-700 dark:text-white">
+                  {user.name || "User"}
+                </span>
+                 {/* ✅ Logout: red outlined in light, white outlined in dark */}
+                 <Button variant="bordered" color="danger" size="sm"
                  onClick={() => authClient.signOut()} >
                   Logout
                 </Button>
@@ -192,4 +212,5 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navbar;  
+

@@ -8,6 +8,10 @@ const nextConfig = {
 
   images: {
     remotePatterns: [
+          {
+        protocol: "https",
+        hostname: "mockmind-api.uifaces.co",  
+      },
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
