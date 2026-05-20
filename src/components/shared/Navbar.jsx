@@ -4,11 +4,13 @@ import { Avatar, Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { FaRegMehRollingEyes } from "react-icons/fa";
-import 'animate.css';
+import "animate.css";
+import { authClient } from "@/lib/auth-client";
+
 
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
@@ -26,9 +28,7 @@ export function ThemeSwitch() {
 
   return (
     <button
-      onClick={() =>
-        setTheme(theme === "dark" ? "light" : "dark")
-      }
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       className="p-2 rounded-lg text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-200"
       aria-label="Toggle theme"
     >
@@ -41,7 +41,10 @@ export function ThemeSwitch() {
   );
 }
 const Navbar = () => {
-  const user = null;
+  
+    const { data: session } = authClient.useSession();
+  const user = session?.user;
+
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -58,30 +61,27 @@ const Navbar = () => {
     <header className="sticky top-0 z-50 bg-white border-gray-300 dark:bg-olive-600 border-b  dark:border-olive-700  shadow-sm">
       <nav className="max-w-7xl mx-auto px-4  sm:px-6">
         {/* Top Navbar */}
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between ">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1">
-            <div className="sm:w-20 sm:h-20 flex items-center justify-center">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex items-center">
               <Image
-                src="/assets/studyNook.png"
-                alt="StudyNook logo"
-                width={110}
-                height={110}
-                className="object-contain"
-                // style={{ mixBlendMode: "multiply" }}
-                
+                src={"/assets/studyNook.png"}
+                alt={"StudyNook Logo"}
+                width={120}
+                height={120}
+               
               />
-              
-            </div>
-            {/* ✅ Logo text: gray-800 in light, white in dark */}
-            <span className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
-              <div className="flex items-center">
-                StudyN<FaRegMehRollingEyes className="text-black animate_animated animate-bounce animate-delay-5s 5s"/>
-                <FaRegMehRollingEyes  className="text-black animate_animated animate-bounce animate-delay-5s 5s"/>k
-                </div>
-            </span>
-          </Link>
 
+              <span className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">
+                <div className="flex items-center">
+                  StudyN
+                  <FaRegMehRollingEyes className="text-black animate-spin" />
+                  <FaRegMehRollingEyes className="text-black animate-spin" />k
+                </div>
+              </span>
+            </div>
+          </Link>
           {/* Desktop Nav */}
           <ul className="hidden lg:flex items-center gap-1">
             {navLinks.map(({ href, label }) => (
@@ -107,8 +107,12 @@ const Navbar = () => {
             <ThemeSwitch />
             {user ? (
               <>
-                <Avatar className="w-9 h-9" />
-                <Button variant="bordered" color="danger" size="sm">
+                <Avatar 
+                  src={user?.image} 
+                  alt={user?.name}
+                className="w-9 h-9" />
+                <Button variant="bordered" color="danger" size="sm"
+                 onClick={() => authClient.signOut()} >
                   Logout
                 </Button>
               </>

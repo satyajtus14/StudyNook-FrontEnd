@@ -1,4 +1,5 @@
 import React from 'react';
+import LoginClientPage from './LoginClientpage';
 
 export const metadata = {
   title: "StudyNook | Login",
@@ -7,7 +8,7 @@ export const metadata = {
 const LoginPage = () => {
     return (
         <div>
-            Login Page
+            <LoginClientPage />
         </div>
     );
 };

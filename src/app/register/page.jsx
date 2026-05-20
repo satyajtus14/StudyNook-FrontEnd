@@ -1,4 +1,5 @@
-import React from 'react';
+import RegisterClientPage from "./RegisterClientPage";
+
 
 export const metadata = {
   title: "StudyNook | Register",
@@ -6,11 +7,8 @@ export const metadata = {
 
 
 const RegisterPage = () => {
-    return (
-        <div>
-            Register Page
-        </div>
-    );
+       return <RegisterClientPage />;
+
 };
 
 export default RegisterPage;
