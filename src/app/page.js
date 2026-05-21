@@ -11,8 +11,8 @@ export default function Home() {
   return (
      <div>
       <Banner />
-      <AvailableRooms />
       <HowItWorks /> 
+      <AvailableRooms />
       <WhyChooseUs /> 
      </div>
   );

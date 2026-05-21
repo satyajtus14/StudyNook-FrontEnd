@@ -21,7 +21,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-16">
+    <section className="mt-10 max-w-7xl shadow-lg border-1 rounded-lg mx-auto bg-gradient-to-br from-cyan-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16  px-4 ">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
           How It Works

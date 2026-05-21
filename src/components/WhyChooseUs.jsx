@@ -33,13 +33,13 @@ const WhyChooseUs = () => {
   ];
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 py-16">
+    <section className="bg-gradient-to-br from-indigo-600 via-cyan-500 to-blue-600 py-16 text-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
             Why Choose StudyNook?
           </h2>
-          <p className="text-gray-500 mt-2">
+          <p className="text-gray-500 mt-2 dark:text-white">
             Everything you need for a productive session
           </p>
         </div>
