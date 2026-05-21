@@ -1,21 +1,20 @@
 "use client"; // ✅ authClient.useSession() needs this
 
-import React from 'react';
-import { FaRegEye } from "react-icons/fa";
+import React from "react";
 import { SlCalender } from "react-icons/sl";
 import { LuClock, LuHash } from "react-icons/lu";
 import { CancelBookingItem } from "@/components/shared/CancelBookingItem";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
-import Link from 'next/link';
+import Link from "next/link";
 
-import LoadingPage from '../LoadingPage';
-import { BsBack } from 'react-icons/bs';
-import { IoCaretBack } from 'react-icons/io5';
+import LoadingPage from "../LoadingPage";
+
+import { IoCaretBack } from "react-icons/io5";
 
 const MyBookingsClientPage = ({ initialBookings = [] }) => {
-  const { data: session,isPending } = authClient.useSession(); // ✅ correct client-side way
+  const { data: session, isPending } = authClient.useSession(); // ✅ correct client-side way
   const user = session?.user;
 
   const [bookings, setBookings] = useState(initialBookings);
@@ -29,18 +28,20 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
     if (!user?.id) {
       setLoading(false); // no user = stop loading, show empty state
       return;
-    } 
+    }
 
     const fetchBookings = async () => {
-        console.log("=== FETCH DEBUG ===");
-        console.log("user.id:", user.id);
-        console.log("Full URL:", `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`);
-
+      console.log("=== FETCH DEBUG ===");
+      console.log("user.id:", user.id);
+      console.log(
+        "Full URL:",
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`,
+      );
 
       try {
         // ?userId= query param, not /bookings/:id
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`,
         );
 
         if (!res.ok) {
@@ -63,9 +64,7 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
 
   // Loading state
   if (loading) {
-    return (
-         <LoadingPage />
-    );
+    return <LoadingPage />;
   }
 
   // Error state
@@ -79,7 +78,6 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-
       {/* Header */}
       <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
         My Bookings
@@ -87,6 +85,7 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
       <p className="text-gray-400 mt-1 mb-8 text-sm sm:text-base">
         Manage and view your upcoming study plans
       </p>
+
 
       {/* Empty state */}
       {bookings.length === 0 && (
@@ -123,20 +122,23 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
                 {/* Status Badge */}
                 <span
                   className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full mb-3
-                    ${booking.status === "confirmed"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-orange-100 text-orange-600"
+                    ${
+                      booking.status === "confirmed"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-orange-100 text-orange-600"
                     }`}
                 >
-                  {booking.status === "confirmed" ? "✓ Confirmed" : "❌ Cancelled"}
+                  {booking.status === "confirmed"
+                    ? "✓ Confirmed"
+                    : "❌ Cancelled"}
                 </span>
 
                 {/* Room Name */}
-                 <Link href={`/rooms/${booking.roomId}`}>
+                <Link href={`/rooms/${booking?._id}`}>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2">
-                  {booking.roomName}
-                </h2>
-                 </Link>
+                    {booking.roomName}
+                  </h2>
+                </Link>
 
                 {/* Date */}
                 <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
@@ -164,18 +166,19 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
 
                 <div className="flex gap-3">
                   <CancelBookingItem bookingId={booking._id} />
-
-                    {/* Future: View Details button */}
-                    <Link href={`/rooms/`}>
-                    <button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                    <IoCaretBack /> Back to Rooms
-                  </button>
-                    </Link>
                 </div>
               </div>
             </div>
           </div>
         ))}
+      </div>
+            <div className="flex justify-end mb-6 gap-4 mt-5">
+        {/* Future: View Details button */}
+        <Link href={`/rooms/`}>
+          <button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+            <IoCaretBack /> Back to Rooms
+          </button>
+        </Link>
       </div>
     </div>
   );

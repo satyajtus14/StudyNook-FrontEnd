@@ -1,13 +1,14 @@
 import React from 'react';
+import MyListingClientPage from './MyListingClientPage';
 
 export const metadata = {
-  title: "StudyNook – My Listings",
+  title: "StudyNook | My Listings",
 };
 
 const MyListingPage = () => {
     return (
         <div>
-            My Listing Page
+           <MyListingClientPage  />
         </div>
     );
 };
