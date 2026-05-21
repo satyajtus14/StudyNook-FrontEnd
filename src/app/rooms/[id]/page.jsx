@@ -1,5 +1,6 @@
 
 
+import LoadingPage from "@/app/LoadingPage";
 import ErrorPage from "./ErrorPage";
 import RoomDetailsClient from "@/components/RoomDetailsClient";
 
@@ -43,6 +44,7 @@ const RoomDetailsPage = async ({ params,error, reset }) => {
         <DeleteRoomBookingByAlert  room={roomData} />    
       </div>
   */}
+       
 
        {/* Pass data down to client component */}
      <RoomDetailsClient room={roomData} />
