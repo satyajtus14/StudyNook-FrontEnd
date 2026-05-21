@@ -8,6 +8,9 @@ import { CancelBookingItem } from "@/components/shared/CancelBookingItem";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
+import Link from 'next/link';
+
+import LoadingPage from '../LoadingPage';
 
 const MyBookingsClientPage = ({ initialBookings = [] }) => {
   const { data: session,isPending } = authClient.useSession(); // ✅ correct client-side way
@@ -59,9 +62,7 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
   // Loading state
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-10">
-        <p className="text-center text-gray-400 py-20">Loading bookings...</p>
-      </div>
+         <LoadingPage />
     );
   }
 
@@ -153,15 +154,19 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
 
               {/* Price + Action Buttons */}
               <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
-                <span className="text-2xl font-bold text-cyan-500">
+                <span className="text-2xl font-bold text-orange-700">
                   ${booking.totalCost?.toFixed(2)}
                 </span>
 
                 <div className="flex gap-3">
                   <CancelBookingItem bookingId={booking._id} />
-                  <button className="flex items-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+
+                    {/* Future: View Details button */}
+                    <Link href={`/rooms/`}>
+                    <button className="flex items-center gap-2 bg-olive-500 hover:bg-olive-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
                     <FaRegEye /> View
                   </button>
+                    </Link>
                 </div>
               </div>
             </div>

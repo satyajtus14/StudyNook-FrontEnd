@@ -5,16 +5,17 @@ import useBooking from "@/hook/useBooking";
 import Image from "next/image";
 import { LuMapPin, LuUsers, LuClock } from "react-icons/lu";
 import { FaRegCalendar } from "react-icons/fa";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { Delete } from "lucide-react";
 import { DeleteRoomBookingByAlert } from "./shared/DeleteRoomBookingByAlert";
 import { EditRoomInfoByModal } from "./shared/EditRoomInfoByModal";
+import LoadingPage from "@/app/LoadingPage";
 
 const RoomDetailsClient = ({ room }) => {
 
   // ✅ Guard check
-  if (!room) return <p className="text-center text-gray-500">Loading...</p>;
-
+  if (!room) return <LoadingPage />;
+  
   const {
     _id, imageUrl, roomName, roomType, floor,
     availableFrom, availableUntil,

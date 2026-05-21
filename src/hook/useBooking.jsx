@@ -86,15 +86,24 @@ const useBooking = (room,user) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookingData),
       });
+      
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+
+        if (response.status === 409) {
+    //  Conflict — show warning toast
+    toast.warning(responseData.message);    // "Room already booked from 10:00 to 12:00"
+    return;
+  }
 
       if (!response.ok) {
         toast.error("Booking failed. Please try again.");
         return;
       }
 
-      const data = await response.json();
+      // const data = await response.json();
       toast.success("Room booked successfully!");
-      console.log("Booking confirmed:", data);
+      console.log("Booking confirmed:", responseData);
 
     } catch (error) {
       console.error("Booking error:", error);
