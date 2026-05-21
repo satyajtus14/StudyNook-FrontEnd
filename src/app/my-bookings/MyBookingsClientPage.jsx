@@ -35,17 +35,17 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
       console.log("user.id:", user.id);
       console.log(
         "Full URL:",
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`,
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
       );
 
       try {
         // ?userId= query param, not /bookings/:id
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`,
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
         );
 
         if (!res.ok) {
-          setError("Failed to load bookings.");
+          setError("Failed to load listings.");
           return;
         }
 

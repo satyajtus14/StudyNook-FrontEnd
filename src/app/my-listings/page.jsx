@@ -8,7 +8,7 @@ export const metadata = {
 const MyListingPage = () => {
     return (
         <div>
-           <MyListingClientPage  />
+           <MyListingClientPage />
         </div>
     );
 };

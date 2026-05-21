@@ -1,59 +1,115 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import {
-  Button,
-  Card,
-  FieldError,
-  Input,
-  Label,
-  TextArea,
-  TextField,
+  Button, Card, FieldError, Input, Label, TextArea, TextField,
 } from "@heroui/react";
-
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation"; // ✅ remove redirect import
 import React, { useState } from "react";
- import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const inputClass =
   "w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white shadow-sm px-4 py-3 outline-none hover:border-olive-400 focus:border-olive-500 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500";
 
 const AddRoomClient = () => {
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+  const router = useRouter();
 
-const onSubmit = async (e) => {
-  e.preventDefault();
-
-  // Handle form submission logic here
-  const formData = new FormData(e.currentTarget);
-  const roomData = Object.fromEntries(formData.entries());
-
-  roomData.amenities = amenities; // ✅ manually add amenities array
-
-  console.log("Submitting:", roomData);
- 
-   
-   const response = await fetch("http://localhost:5002/rooms", {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json"
-     },
-     body: JSON.stringify(roomData)
-   });      
-     const data = await response.json();
-     toast.success(data.message);
-     redirect("/rooms"); // Redirect to the My Rooms page after successful submission
-  };
   const [amenities, setAmenities] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
 
   const amenitiesList = [
-    "Whiteboard",
-    "Projector",
-    "Wi-Fi",
-    "Power Outlets",
-    "Quiet Zone",
-    "Air Conditioning",
+    "Whiteboard", "Projector", "Wi-Fi",
+    "Power Outlets", "Quiet Zone", "Air Conditioning",
   ];
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const roomData = Object.fromEntries(formData.entries());
+
+    // ✅ Attach extra fields
+    roomData.amenities  = amenities;
+    roomData.userId     = user?.id    || "anonymous";
+    roomData.userName   = user?.name  || "Anonymous User";
+    roomData.userEmail  = user?.email || "No email provided";
+    roomData.userImage  = user?.image || null;
+
+    try {
+      // ── Step 1: POST to /rooms ──────────────────────────────────────────
+      const roomRes = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(roomData),
+        }
+      );
+
+      if (!roomRes.ok) {
+        toast.error("Failed to add room. Please try again.");
+        return;
+      }
+
+      const roomResponse = await roomRes.json();
+      console.log("Room created:", roomResponse);
+
+      // ── Step 2: POST to /listings ───────────────────────────────────────
+      const listingPayload = {
+        userId:         roomData.userId,
+        userName:       roomData.userName,
+        userEmail:      roomData.userEmail,
+        userImage:      roomData.userImage,
+        roomId:         roomResponse?.roomId || roomResponse?.insertedId || roomResponse?._id,
+        imageUrl:       roomData.imageUrl,
+        roomName:       roomData.roomName,
+        roomType:       roomData.roomType,
+        floor:          roomData.floor,
+        capacity:       roomData.capacity,
+        hourlyRate:     roomData.hourlyRate,
+        availableFrom:  roomData.availableFrom,
+        availableUntil: roomData.availableUntil,
+        amenities:      roomData.amenities,
+        description:    roomData.description,
+
+        date: new Date().toLocaleDateString("en-US", 
+          {
+         year: "numeric", month: "short", day: "numeric"
+          }),
+       createdAt: new Date().toISOString(),
+      };
+
+      console.log("Listing payload to send:", listingPayload);
+
+      const listingRes = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/listings`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(listingPayload),
+        }
+      );
+
+      if (!listingRes.ok) {
+        toast.error("Room added but listing failed. Please try again.");
+        return;
+      }
+
+      const listingResponse = await listingRes.json();
+      console.log("Listing created:", listingResponse);
+      console.log("Listing status:", listingRes.status);
+
+      toast.success("Room listed successfully!");
+      router.push("/my-listings"); // ✅ redirect after both succeed
+
+    } catch (error) {
+      console.error("Submit error:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
+  }; // ✅ single clean closing brace for onSubmit
 
   return (
     <div className="max-w-7xl mx-auto bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 py-8 sm:py-10 px-4 sm:px-6 min-h-screen">
@@ -61,9 +117,7 @@ const onSubmit = async (e) => {
 
         {/* Header */}
         <div className="border-b border-gray-100 dark:border-gray-700 px-5 sm:px-10 py-6 bg-gray-50 dark:bg-gray-800">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-            Add New Room
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Add New Room</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-2 font-semibold">
             Fill in the details below to list your study room on StudyNook.
           </p>
@@ -76,13 +130,8 @@ const onSubmit = async (e) => {
             {/* Room Name */}
             <div className="lg:col-span-2 space-y-2">
               <TextField name="roomName" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Room Name
-                </Label>
-                <Input
-                  placeholder="Silent Study Room "
-                  className={inputClass}
-                />
+                <Label className="text-gray-700 dark:text-gray-300">Room Name</Label>
+                <Input placeholder="Silent Study Room" className={inputClass} />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
             </div>
@@ -92,10 +141,7 @@ const onSubmit = async (e) => {
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Room Type
               </label>
-              <select
-                name="roomType"
-                className={inputClass}
-              >
+              <select name="roomType" className={inputClass}>
                 <option className="dark:bg-gray-800">Private Room</option>
                 <option className="dark:bg-gray-800">Conference Room</option>
                 <option className="dark:bg-gray-800">Quiet Study Space</option>
@@ -106,13 +152,8 @@ const onSubmit = async (e) => {
             {/* Floor */}
             <div className="space-y-2">
               <TextField name="floor" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Floor
-                </Label>
-                <Input
-                  placeholder="3rd Floor"
-                  className={inputClass}
-                />
+                <Label className="text-gray-700 dark:text-gray-300">Floor</Label>
+                <Input placeholder="3rd Floor" className={inputClass} />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
             </div>
@@ -120,14 +161,8 @@ const onSubmit = async (e) => {
             {/* Capacity */}
             <div className="space-y-2">
               <TextField name="capacity" type="number" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Capacity
-                </Label>
-                <Input
-                  type="number"
-                  placeholder="4"
-                  className={inputClass}
-                />
+                <Label className="text-gray-700 dark:text-gray-300">Capacity</Label>
+                <Input type="number" placeholder="4" className={inputClass} />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
             </div>
@@ -135,14 +170,8 @@ const onSubmit = async (e) => {
             {/* Hourly Rate */}
             <div className="space-y-2">
               <TextField name="hourlyRate" type="number" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Hourly Rate ($)
-                </Label>
-                <Input
-                  type="number"
-                  placeholder="5"
-                  className={inputClass}
-                />
+                <Label className="text-gray-700 dark:text-gray-300">Hourly Rate ($)</Label>
+                <Input type="number" placeholder="5" className={inputClass} />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
             </div>
@@ -152,11 +181,7 @@ const onSubmit = async (e) => {
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Available From
               </label>
-              <input
-                type="time"
-                name="availableFrom"
-                className={inputClass}
-              />
+              <input type="time" name="availableFrom" className={inputClass} />
             </div>
 
             {/* Available Until */}
@@ -164,19 +189,13 @@ const onSubmit = async (e) => {
               <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Available Until
               </label>
-              <input
-                type="time"
-                name="availableUntil"
-                className={inputClass}
-              />
+              <input type="time" name="availableUntil" className={inputClass} />
             </div>
 
             {/* Image URL */}
             <div className="lg:col-span-2 space-y-2">
               <TextField name="imageUrl" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Image URL
-                </Label>
+                <Label className="text-gray-700 dark:text-gray-300">Image URL</Label>
                 <Input
                   type="url"
                   placeholder="https://example.com/room.jpg"
@@ -186,16 +205,10 @@ const onSubmit = async (e) => {
                 />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
-
               {imageUrl && (
                 <div className="mt-4 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                  <Image
-                    src={imageUrl}
-                    alt="Room Preview"
-                    width={600}
-                    height={500}
-                    className="w-full h-64 object-cover"
-                  />
+                  <Image src={imageUrl} alt="Room Preview" width={600} height={500}
+                    className="w-full h-64 object-cover" />
                 </div>
               )}
             </div>
@@ -203,13 +216,9 @@ const onSubmit = async (e) => {
             {/* Description */}
             <div className="lg:col-span-2 space-y-2">
               <TextField name="description" isRequired>
-                <Label className="text-gray-700 dark:text-gray-300">
-                  Description
-                </Label>
-                <TextArea
-                  placeholder="Describe the room..."
-                  className={`${inputClass} min-h-30 resize-y`}
-                />
+                <Label className="text-gray-700 dark:text-gray-300">Description</Label>
+                <TextArea placeholder="Describe the room..."
+                  className={`${inputClass} min-h-30 resize-y`} />
                 <FieldError className="text-red-500 text-sm" />
               </TextField>
             </div>
@@ -221,8 +230,7 @@ const onSubmit = async (e) => {
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {amenitiesList.map((amenity) => (
-                  <label
-                    key={amenity}
+                  <label key={amenity}
                     className={`flex items-center gap-3 rounded-2xl px-4 py-3 border cursor-pointer transition-all ${
                       amenities.includes(amenity)
                         ? "border-olive-500 bg-olive-50 dark:bg-olive-900/30 dark:border-olive-400 text-black dark:text-white"
@@ -231,15 +239,12 @@ const onSubmit = async (e) => {
                   >
                     <input
                       type="checkbox"
-                      name="amenities"
                       value={amenity}
                       checked={amenities.includes(amenity)}
                       onChange={(e) => {
                         const { value, checked } = e.target;
                         setAmenities((prev) =>
-                          checked
-                            ? [...prev, value]
-                            : prev.filter((a) => a !== value)
+                          checked ? [...prev, value] : prev.filter((a) => a !== value)
                         );
                       }}
                       className="w-4 h-4 accent-olive-600"
@@ -251,11 +256,8 @@ const onSubmit = async (e) => {
             </div>
           </div>
 
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            className="w-full rounded-2xl bg-olive-600 hover:bg-olive-700 dark:bg-olive-600 dark:hover:bg-olive-500 active:scale-[0.99] text-white font-semibold py-7 text-lg shadow-lg transition-all"
-          >
+          <Button type="submit"
+            className="w-full rounded-2xl bg-olive-600 hover:bg-olive-700 dark:bg-olive-600 dark:hover:bg-olive-500 active:scale-[0.99] text-white font-semibold py-7 text-lg shadow-lg transition-all">
             Add Room
           </Button>
         </form>

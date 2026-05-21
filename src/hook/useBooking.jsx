@@ -1,11 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
 
 const useBooking = (room,user) => {
   const { id, roomName, hourlyRate, availableFrom, availableUntil } = room;
+
+  const router = useRouter();
 
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -111,6 +114,52 @@ const useBooking = (room,user) => {
     }
   };
 
+  // Handle listing new room added by user
+    // Validate booking time against room availability
+   const handleListing = async () => {
+
+    const listingDataByUser = {
+      
+      userId: user?.id || "anonymous", // Use user ID if available, otherwise "anonymous"
+      userName: user?.name || "Anonymous User",
+      userEmail: user?.email || "No email provided",
+      userImage: user?.image || null,
+      roomId: id,
+      imageUrl: room.imageUrl || null,
+      roomName: roomName,
+      roomType: room.roomType || "General",
+      date: date,
+      hourlyRate: hourlyRate,
+      availableFrom: availableFrom,
+      availableUntil: availableUntil, 
+      amenities: room.amenities || [],
+    };
+    console.log("Listing data to send:", listingDataByUser);
+    try {
+      const response = await fetch("http://localhost:5002/listings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(listingDataByUser),
+      });
+
+      const responseData = await response.json();
+      console.log("Server response for listing:", responseData);
+
+      if (!response.ok) {
+        toast.error("Listing failed. Please try again.");
+        return;
+      }
+
+      toast.success("New Room listed successfully!");
+      router.push("/my-listings");
+      console.log("Listing confirmed:", responseData);
+
+    } catch (error) {
+      console.error("Listing error:", error);
+      toast.error("Something went wrong on listing.");
+    }
+  }
+
   return {
     date, setDate,
     startTime, setStartTime,
@@ -119,6 +168,7 @@ const useBooking = (room,user) => {
     totalHours,
     totalCost,
     handleBooking,
+    handleListing
   };
 };
 
