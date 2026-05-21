@@ -254,6 +254,7 @@ const AddRoomClient = () => {
                 ))}
               </div>
             </div>
+            
           </div>
 
           <Button type="submit"

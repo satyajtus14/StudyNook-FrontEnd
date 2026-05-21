@@ -1,3 +1,5 @@
+"use client";
+import { authClient } from "@/lib/auth-client";
 import { Button } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,6 +9,10 @@ import { FiExternalLink } from "react-icons/fi";
 import { LuMapPin, LuUsers, LuClock } from "react-icons/lu";
 
 const RoomCards = ({ roomInfo }) => {
+    const { data: session } = authClient.useSession();
+    const user = session?.user;
+    console.log("User session data in RoomCards:", user);
+
   const {
     _id,
     imageUrl,
@@ -18,6 +24,8 @@ const RoomCards = ({ roomInfo }) => {
     capacity,
     hourlyRate,
     amenities = [],
+    userName,
+    userEmail,
   } = roomInfo;
 
   const amenitiesArray = Array.isArray(amenities)
@@ -25,6 +33,7 @@ const RoomCards = ({ roomInfo }) => {
   : typeof amenities === "string"
   ? amenities.split(",").filter(Boolean)
   : [];
+const ownerName = userName?.trim() || "studyNook";
 
   return (
     <div className="border border-gray-300 dark:border-gray-700 rounded-2xl shadow-md overflow-hidden bg-white dark:bg-gray-900 hover:shadow-xl transition-shadow duration-300">
@@ -73,6 +82,19 @@ const RoomCards = ({ roomInfo }) => {
           </div>
         </div>
 
+                {/* Owner */}
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-olive-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+            {ownerName.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex justify-between items-center gap-1">
+            <p className="text-xs text-gray-700">Hosted by: </p>
+            <p className="text-sm font-semibold text-blue-800 dark:text-white truncate">
+              {ownerName}
+            </p>
+          </div>
+        </div>
+
         {/* Amenities */}
         {amenitiesArray.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -89,7 +111,10 @@ const RoomCards = ({ roomInfo }) => {
                 +{amenitiesArray.length - 2} more
               </span>
             )}
+
+          
           </div>
+          
         )}
 
         {/* Divider */}

@@ -67,18 +67,16 @@ const MyListingClientPage = ({ initialListings = [] }) => {
         <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
           My Listings
         </h1>
-        <p className="text-gray-400 mt-1 text-sm sm:text-base">
+        <p className="text-gray-700 mt-1 text-sm sm:text-base">
           Manage and view your listed rooms
         </p>
       </div>
 
       {/* Empty State */}
       {listings.length === 0 && (
-        <p className="text-center text-gray-400 py-20">
-          You have no listings yet.{" "}
-          <Link href="/add-room" className="text-indigo-500 underline">
-            Add a room
-          </Link>
+        <p className="text-center font-semibold text-4xl text-gray-700 py-20">
+          You do not have any Room in list yet.
+    
         </p>
       )}
 
@@ -117,7 +115,7 @@ const MyListingClientPage = ({ initialListings = [] }) => {
 
             {/* Card Body */}
             <div className="flex flex-col flex-1 p-4 gap-3">
-              
+
               {/* Room Name */}
               <Link href={`/rooms/${listing.roomId || listing._id}`}>
                 <h2 className="text-base font-bold text-gray-800 dark:text-white hover:underline line-clamp-1">
