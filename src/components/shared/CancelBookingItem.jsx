@@ -14,13 +14,11 @@ export function CancelBookingItem({ bookingId }) {
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/booking/${bookingId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "content-type": "application/json",
-            // Authorization: `Bearer ${tokenData?.token}` // Include token in Authorization header
-          },
-        },
+         {
+    method: "PATCH",                                    // ✅ PATCH not DELETE
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ status: "cancelled" }),      // ✅ send status
+  }
       );
 
       if (response.ok) {

@@ -11,6 +11,8 @@ import { useEffect, useState } from "react";
 import Link from 'next/link';
 
 import LoadingPage from '../LoadingPage';
+import { BsBack } from 'react-icons/bs';
+import { IoCaretBack } from 'react-icons/io5';
 
 const MyBookingsClientPage = ({ initialBookings = [] }) => {
   const { data: session,isPending } = authClient.useSession(); // ✅ correct client-side way
@@ -126,13 +128,15 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
                       : "bg-orange-100 text-orange-600"
                     }`}
                 >
-                  {booking.status === "confirmed" ? "✓ Confirmed" : "⏳ Pending"}
+                  {booking.status === "confirmed" ? "✓ Confirmed" : "❌ Cancelled"}
                 </span>
 
                 {/* Room Name */}
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                 <Link href={`/rooms/${booking.roomId}`}>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2">
                   {booking.roomName}
                 </h2>
+                 </Link>
 
                 {/* Date */}
                 <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
@@ -163,8 +167,8 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
 
                     {/* Future: View Details button */}
                     <Link href={`/rooms/`}>
-                    <button className="flex items-center gap-2 bg-olive-500 hover:bg-olive-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-                    <FaRegEye /> View
+                    <button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                    <IoCaretBack /> Back to Rooms
                   </button>
                     </Link>
                 </div>
