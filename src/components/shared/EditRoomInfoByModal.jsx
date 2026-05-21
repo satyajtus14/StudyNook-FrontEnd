@@ -13,15 +13,19 @@ import {
   Button,
   FieldError,
 } from "@heroui/react";
+import { useRouter } from "next/navigation";
+
 import { BiEdit, BiEnvelope } from "react-icons/bi";
 import { toast } from "react-toastify";
 
 export function EditRoomInfoByModal({ room }) {
   const {
-    _id,imageUrl, roomName, roomType, floor,
+    _id,roomId,imageUrl, roomName, roomType, floor,
     availableFrom, availableUntil,
     capacity, hourlyRate, description,
   } = room;
+
+const router = useRouter()
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -29,27 +33,41 @@ export function EditRoomInfoByModal({ room }) {
     // Handle form submission logic here
     // You can access form values using e.target.elements
     const formData = new FormData(e.currentTarget);
-    const roomInfoCollect = Object.fromEntries(formData.entries());
+     const roomInfoCollect = Object.fromEntries(formData.entries());
 
-    // Example: Log the collected data
-    console.log(roomInfoCollect);
+    // Log the collected data
+     console.log("Submitting update:", roomInfoCollect);
+
 
     //  const {data:tokenData} = await authClient.token()
     //      console.log(tokenData); 
 
+
+
     //Call your API to edit the data in the database here
-    const response = await fetch(`http://localhost:5002/rooms/${_id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: `Bearer ${tokenData?.token}`
-      },
-      body: JSON.stringify(roomInfoCollect)
-    }); 
-    const result = await response.json();
+    try {
+    // 1. Update roomsCollection by roomId
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${roomId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(roomInfoCollect),
+    });
+
+    // 2. Update listingsCollection by listing's own _id
+    await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings/${_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(roomInfoCollect),
+    });
+
     toast.success("Room information updated successfully!");
-    console.log('Update Result:', result)
-  };
+    router.refresh();
+    router.push("/my-listings");
+  } catch (err) {
+    console.error("Update error:", err);
+    toast.error("Something went wrong.");
+  }
+};
 
   return (
      <Modal>

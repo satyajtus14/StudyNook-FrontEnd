@@ -74,7 +74,7 @@ const MyListingClientPage = ({ initialListings = [] }) => {
 
       {/* Empty State */}
       {listings.length === 0 && (
-        <p className="text-center font-semibold text-4xl text-gray-700 py-20">
+        <p className="text-center font-semibold text-3xl text-gray-700 py-20">
           You do not have any Room in list yet.
     
         </p>
@@ -199,7 +199,7 @@ const MyListingClientPage = ({ initialListings = [] }) => {
                     </span>
                   </div>
                 )}
-                <div className="min-w-0">
+                <div className="min-w-3.5">
                   <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
                     {listing.userName}
                   </p>

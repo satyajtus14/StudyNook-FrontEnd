@@ -10,12 +10,13 @@ import { toast } from "react-toastify";
 
 export function DeleteRoomBookingByAlert({ room }) {
  
-      const {
-   _id, imageUrl, roomName, roomType, floor,
+      const {_id,roomId, imageUrl, roomName, roomType, floor,
     availableFrom, availableUntil,
     capacity, hourlyRate, description,
   } = room;
-
+  
+  // _id      = listingsCollection document id
+  // roomId   = roomsCollection document id
       const router = useRouter()
       // const { data: session } = authClient.useSession();
     
@@ -27,20 +28,32 @@ export function DeleteRoomBookingByAlert({ room }) {
       // const {data:tokenData} = await authClient.token()
       //      console.log(tokenData);  
 
-           
-        // Call your API to delete the destination from the database here
-        const response = await fetch(`http://localhost:5002/rooms/${_id}`, {
+        try {   
+        // Call your API Delete from roomsCollection from the database 
+         await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${roomId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
             // Authorization: `Bearer ${tokenData?.token}`
           }
         }); 
-        const result = await response.json();
-        toast.success("Room deleted successfully!");
-        console.log('Delete Result:', result);
-        router.push('/rooms'); // Redirect to rooms list after deletion
-      };
+
+
+      // Delete from listingsCollection
+      await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings/${_id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+         
+      toast.success("Room deleted successfully!");
+      router.refresh();
+      router.push("/rooms");
+   
+    } catch(error) {
+      console.error("Error deleting room:", error);
+      toast.error("Failed to delete the room. Please try again.");
+    }
+  };
 
   return (
 

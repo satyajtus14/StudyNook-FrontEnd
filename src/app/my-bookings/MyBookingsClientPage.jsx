@@ -82,15 +82,15 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
       <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
         My Bookings
       </h1>
-      <p className="text-gray-400 mt-1 mb-8 text-sm sm:text-base">
+      <p className="text-gray-700 mt-1 mb-8 text-sm sm:text-base">
         Manage and view your upcoming study plans
       </p>
 
 
       {/* Empty state */}
       {bookings.length === 0 && (
-        <p className="text-center text-gray-400 py-20">
-          You have no bookings yet.
+        <p className="text-center font-semibold text-3xl text-gray-700 py-20">
+          You have no study room booking yet.
         </p>
       )}
 
