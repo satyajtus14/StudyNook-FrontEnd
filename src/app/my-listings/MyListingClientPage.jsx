@@ -1,14 +1,14 @@
 "use client";
-import { CancelBookingItem } from "@/components/shared/CancelBookingItem";
-import { authClient } from "@/lib/auth-client"; // adjust path
+import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaRegCalendar } from "react-icons/fa";
 import { IoCaretBack } from "react-icons/io5";
 import { LuClock, LuHash, LuMapPin, LuUsers } from "react-icons/lu";
-import { SlCalender } from "react-icons/sl";
 import LoadingPage from "../LoadingPage";
+import { EditRoomInfoByModal } from "@/components/shared/EditRoomInfoByModal";
+import { DeleteRoomBookingByAlert } from "@/components/shared/DeleteRoomBookingByAlert";
 
 const MyListingClientPage = ({ initialListings = [] }) => {
   const { data: session, isPending } = authClient.useSession();
@@ -20,9 +20,6 @@ const MyListingClientPage = ({ initialListings = [] }) => {
 
   useEffect(() => {
     if (isPending) return;
-     
-      console.log("user:", user);       
-     console.log("user.id:", user?.id); 
 
     if (!user?.id) {
       setLoading(false);
@@ -30,10 +27,6 @@ const MyListingClientPage = ({ initialListings = [] }) => {
     }
 
     const fetchListings = async () => {
-      console.log("user object:", user); // 👈 add this
-  console.log("user.id:", user?.id);
-  console.log("user._id:", user?._id);
-
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
@@ -55,29 +48,31 @@ const MyListingClientPage = ({ initialListings = [] }) => {
     };
 
     fetchListings();
-  }, [user?.id, isPending]); // ✅ use user?.id not entire user object
+  }, [user?.id, isPending]);
 
   if (isPending || loading) return <LoadingPage />;
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="max-w-7xl mx-auto px-4 py-10">
         <p className="text-center text-red-400 py-20">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
       {/* Header */}
-      <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
-        My Listings
-      </h1>
-      <p className="text-gray-400 mt-1 mb-8 text-sm sm:text-base">
-        Manage and view your listed rooms
-      </p>
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
+          My Listings
+        </h1>
+        <p className="text-gray-400 mt-1 text-sm sm:text-base">
+          Manage and view your listed rooms
+        </p>
+      </div>
 
-      {/* Empty state */}
+      {/* Empty State */}
       {listings.length === 0 && (
         <p className="text-center text-gray-400 py-20">
           You have no listings yet.{" "}
@@ -87,74 +82,143 @@ const MyListingClientPage = ({ initialListings = [] }) => {
         </p>
       )}
 
-      {/* Listing Cards */}
-      <div className="flex flex-col gap-4">
+      {/* Listing Cards Grid — matches /rooms UI */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {listings.map((listing) => (
           <div
             key={listing._id}
-            className="flex flex-col sm:flex-row border-2 border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm bg-white dark:bg-gray-900"
+            className="flex flex-col rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm bg-white dark:bg-gray-900 hover:shadow-md transition-shadow"
           >
-            {/* Left — Room Image */}
-            {listing.imageUrl ? (
-              <Image
-                src={listing.imageUrl}
-                alt={listing.roomName}
-                width={200}
-                height={160}
-                className="object-cover w-full sm:w-[200px] h-48 sm:h-auto shrink-0"
-              />
-            ) : (
-              <div className="w-full sm:w-[200px] h-48 sm:h-auto bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-                <span className="text-gray-400 text-sm">No image</span>
-              </div>
-            )}
+            {/* Room Image */}
+            <div className="relative w-full h-48 shrink-0">
+              {/* Room Type Badge */}
+              <span className="absolute top-3 left-3 z-10 bg-white/80 dark:bg-gray-900/80 text-gray-700 dark:text-gray-300 text-xs font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
+                {listing.roomType}
+              </span>
 
-            {/* Right — Listing Details */}
-            <div className="flex flex-col justify-between w-full p-5">
-              <div>
-                {/* Room Name */}
-                <Link href={`/rooms/${listing._id}`}>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2 hover:underline">
-                    {listing.roomName}
-                  </h2>
-                </Link>
+              {/* Hourly Rate Badge */}
+              <span className="absolute top-3 right-3 z-10 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                ${listing.hourlyRate}/hr
+              </span>
 
-                {/* Room Type */}
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2">
-                  <LuMapPin /> {listing.roomType}
-                </p>
+              {listing.imageUrl ? (
+                <Image
+                  src={listing.imageUrl}
+                  alt={listing.roomName}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <span className="text-gray-400 text-sm">No image</span>
+                </div>
+              )}
+            </div>
 
-                {/* Date */}
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
-                  <SlCalender /> Listed:{" "}
-                  {listing.date ||
+            {/* Card Body */}
+            <div className="flex flex-col flex-1 p-4 gap-3">
+              
+              {/* Room Name */}
+              <Link href={`/rooms/${listing.roomId || listing._id}`}>
+                <h2 className="text-base font-bold text-gray-800 dark:text-white hover:underline line-clamp-1">
+                  {listing.roomName}
+                </h2>
+              </Link>
+
+              {/* Floor */}
+              <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5">
+                <LuMapPin className="text-olive-600 shrink-0" />
+                {listing.floor}
+              </p>
+
+              {/* Capacity */}
+              <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5">
+                <LuUsers className="text-olive-600 shrink-0" />
+                {listing.capacity} people
+              </p>
+
+              {/* Available Hours */}
+              <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5">
+                <LuClock className="text-olive-600 shrink-0" />
+                {listing.availableFrom} – {listing.availableUntil}
+              </p>
+
+              {/* Date Listed */}
+              <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1.5">
+                <FaRegCalendar className="text-olive-600 shrink-0" />
+                {listing.date ||
+                  (listing.createdAt &&
                     new Date(listing.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "short",
                       day: "numeric",
-                    })}
-                </p>
+                    }))}
+              </p>
 
-                {/* Available Hours */}
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
-                  <LuClock />
-                  {listing.availableFrom} – {listing.availableUntil}
-                </p>
+              {/* Listing ID */}
+              <p className="text-gray-400 text-xs flex items-center gap-1.5">
+                <LuHash className="shrink-0" />
+                ID: {listing._id?.slice(0, 8)}
+              </p>
 
-                {/* Listing ID */}
-                <p className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-2 mt-1">
-                  <LuHash /> Listing ID: {listing._id?.slice(0, 8)}
-                </p>
+              {/* Amenities */}
+              {listing.amenities?.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mt-1">
+                  {listing.amenities.slice(0, 2).map((a) => (
+                    <span
+                      key={a}
+                      className="text-xs border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full"
+                    >
+                      {a}
+                    </span>
+                  ))}
+                  {listing.amenities.length > 2 && (
+                    <span className="text-xs text-gray-400 px-2 py-0.5">
+                      +{listing.amenities.length - 2} more
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Divider */}
+              <hr className="border-gray-200 dark:border-gray-700 mt-1" />
+
+              {/* ── User Info Section ── */}
+              <div className="flex items-center gap-3">
+                <p className="text-sm font-semibold text-gray-800 dark:text-white">Room Owner:</p>
+                {listing.userImage ? (
+                  <Image
+                    src={listing.userImage}
+                    alt={listing.userName}
+                    width={36}
+                    height={36}
+                    className="rounded-full object-cover shrink-0 border-2 border-gray-200 dark:border-gray-700"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center shrink-0">
+                    <span className="text-indigo-600 dark:text-indigo-300 text-sm font-bold">
+                      {listing.userName?.charAt(0) || "?"}
+                    </span>
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
+                    {listing.userName}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate">
+                    {listing.userEmail}
+                  </p>
+                </div>
               </div>
 
-              {/* Hourly Rate + Actions */}
-              <div className="flex items-center justify-between mt-4 flex-wrap gap-3">
-                <span className="text-2xl font-bold text-orange-700">
-                  ${listing.hourlyRate}/hr
-                </span>
-                <div className="flex gap-3">
-                  <CancelBookingItem listingId={listing._id} />
-                </div>
+              {/* Action Button */}
+              <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 w-full">
+                {/* <CancelBookingItem listingId={listing._id} /> */}
+               
+                  <EditRoomInfoByModal room={listing} />
+
+                  <DeleteRoomBookingByAlert room={listing} />
+                
               </div>
             </div>
           </div>
@@ -162,7 +226,7 @@ const MyListingClientPage = ({ initialListings = [] }) => {
       </div>
 
       {/* Back Button */}
-      <div className="flex justify-end mb-6 gap-4 mt-5">
+      <div className="flex justify-end mt-8">
         <Link href="/rooms">
           <button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
             <IoCaretBack /> Back to Rooms

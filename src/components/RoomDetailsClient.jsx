@@ -106,11 +106,11 @@ const RoomDetailsClient = ({ room }) => {
             </div>
        
           </div>
-               <div className=" flex justify-center items-center gap-3 mt-6">
-                <EditRoomInfoByModal room={room}  />
+               {/* <div className=" flex justify-center items-center gap-3 mt-6">
+                <EditRoomInfoByModal room={room} />
 
                 <DeleteRoomBookingByAlert room={room}/>
-            </div>
+            </div> */}
         </div>
 
         {/* Right Side — ✅ Pass full room object */}

@@ -53,7 +53,7 @@ export function EditRoomInfoByModal({ room }) {
 
   return (
      <Modal>
-      <Button variant="outline" className="w-1/4 bg-olive-600 hover:bg-olive-700 active:scale-[0.99] text-white font-semibold py-4 rounded-xl transition-all text-lg shadow-md">
+      <Button variant="outline" className="flex-1 bg-olive-600 hover:bg-olive-700 active:scale-[0.99] text-white font-semibold py-2 px-3 rounded-xl transition-all text-sm shadow-md">
         <BiEdit /> Edit
       </Button>
       <Modal.Backdrop>

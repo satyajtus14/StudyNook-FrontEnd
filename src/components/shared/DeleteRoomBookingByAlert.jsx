@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { BiTrash } from "react-icons/bi";
 import { toast } from "react-toastify";
 
-export function DeleteRoomBookingByAlert({room}) {
+export function DeleteRoomBookingByAlert({ room }) {
  
       const {
    _id, imageUrl, roomName, roomType, floor,
@@ -45,7 +45,7 @@ export function DeleteRoomBookingByAlert({room}) {
   return (
 
         <AlertDialog> 
-      <Button variant="danger-soft" className="w-1/4  bg-red-600 hover:bg-red-900 active:scale-[0.99] text-white font-semibold py-4 rounded-xl transition-all text-lg shadow-md"> 
+      <Button variant="danger-soft" className="flex-1 bg-red-600 hover:bg-red-700 active:scale-[0.99] text-white font-semibold py-2 px-3 rounded-xl transition-all text-sm shadow-md"> 
           <BiTrash /> Delete
         </Button>
       <AlertDialog.Backdrop>
