@@ -1,31 +1,30 @@
 "use client";
 
-import { authClient, getAuthToken } from "@/lib/auth-client";
+
+import { getAuthToken } from "@/lib/auth-client";
 import { AlertDialog, Button } from "@heroui/react";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
 export function CancelBookingItem({ bookingId }) {
-  const handleCancelBooking = async () => {
-    //Client-side token
-    const { data: tokenData } = await authClient.token();
-    console.log(tokenData);
 
-    try {
-      const token = await getAuthToken();
-      console.log("Token:", token);
-      
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/booking/${bookingId}`,
-         {
-    method: "PATCH",                                    // ✅ PATCH not DELETE
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ status: "cancelled" }),      // ✅ send status
-  }
-      );
+
+  const handleCancelBooking = async () => {
+  try {
+    const token = await getAuthToken();
+    console.log("Token:", token);
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/booking/${bookingId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status: "cancelled" }),
+      }
+    );
 
       if (response.ok) {
         console.log("Booking cancelled successfully");

@@ -30,20 +30,9 @@ export const auth = betterAuth({
         }
     }, 
 
-    // plugins: [
-    //   jwt()
-    // ]
     plugins: [
-    jwt({
-      jwt: {
-        expirationTime: "7d",
-      },
-      jwks: {
-        keyPairConfig: {
-          alg: "RS256",
-        },
-      },
-    }),
-  ],
+      jwt()
+    ]
+    
 
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import LoadingPage from "@/app/LoadingPage";
 import useBooking from "@/hook/useBooking"; // ✅ import hook here only
 import { authClient } from "@/lib/auth-client";
 import { LuClock } from "react-icons/lu";
@@ -11,7 +12,7 @@ const BookingCard = ({ room }) => {
       console.log("User:", user);
 
   // ✅ Guard check before anything else
-  if (!room) return <p className="text-center text-gray-500">Loading...</p>;
+  if (!room) return <LoadingPage />;
 
   const {roomName, hourlyRate, availableFrom, availableUntil } = room;
 

@@ -5,14 +5,14 @@ import { SlCalender } from "react-icons/sl";
 import { LuClock, LuHash } from "react-icons/lu";
 import { CancelBookingItem } from "@/components/shared/CancelBookingItem";
 import Image from "next/image";
-import { authClient } from "@/lib/auth-client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAuthToken } from "@/lib/auth-client"; 
-
 import LoadingPage from "../LoadingPage";
-
 import { IoCaretBack } from "react-icons/io5";
+import { authClient, getAuthToken } from "@/lib/auth-client";
+
+
 
 const MyBookingsClientPage = ({ initialBookings = [] }) => {
   const { data: session, isPending } = authClient.useSession(); // ✅ correct client-side way
@@ -31,14 +31,14 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
       return;
     }
 
-    const fetchBookings = async () => {
+    
 
+   const fetchBookings = async () => {
+ 
+    try {
+          const token = await getAuthToken(); // ✅ get token
+              console.log("Token:", token);
 
-      try {
-        const token = await getAuthToken(); // ✅ get token
-      console.log("Token:", token);
-
-        // ?userId= query param, not /bookings/:id
         const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`, // ✅ /bookings not /listings
         {
@@ -49,20 +49,21 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
         }
       );
 
-        if (!res.ok) {
-          setError("Failed to load bookings.");
-          return;
-        }
+    if (!res.ok) {
+      setError("Failed to load bookings.");
+      return;
+    }
 
-        const data = await res.json();
-        setBookings(data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Something went wrong.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const data = await res.json();
+    setBookings(data);
+
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setError("Something went wrong.");
+  } finally {
+    setLoading(false); // ✅ always runs whether success, error, or early return
+  }
+};
 
     fetchBookings();
   }, [user?.id, isPending]); // re-runs when user loads

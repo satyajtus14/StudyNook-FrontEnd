@@ -1,5 +1,5 @@
 "use client";
-import { authClient, getAuthToken } from "@/lib/auth-client"; 
+
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { LuClock, LuHash, LuMapPin, LuUsers } from "react-icons/lu";
 import LoadingPage from "../LoadingPage";
 import { EditRoomInfoByModal } from "@/components/shared/EditRoomInfoByModal";
 import { DeleteRoomBookingByAlert } from "@/components/shared/DeleteRoomBookingByAlert";
+import { authClient, getAuthToken } from "@/lib/auth-client";
 
 const MyListingClientPage = ({ initialListings = [] }) => {
   const { data: session, isPending } = authClient.useSession();
@@ -28,11 +29,8 @@ const MyListingClientPage = ({ initialListings = [] }) => {
       return;
     }
 
-    const fetchListings = async () => {
-     
-      
-
-      try {
+  const fetchListings = async () => {
+  try {
           const token = await getAuthToken(); // ✅ get token
               console.log("Token:", token);
 
@@ -46,20 +44,21 @@ const MyListingClientPage = ({ initialListings = [] }) => {
         }
       );
 
-        if (!res.ok) {
-          setError("Failed to load listings.");
-          return;
-        }
+    if (!res.ok) {
+      setError("Failed to load listings.");
+      return;
+    }
 
-        const data = await res.json();
-        setListings(data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setError("Something went wrong.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    const data = await res.json();
+    setListings(data);
+
+  } catch (err) {
+    console.error("Fetch error:", err);
+    setError("Something went wrong.");
+  } finally {
+    setLoading(false); // ✅ always runs
+  }
+};
 
     fetchListings();
   }, [user?.id, isPending]);

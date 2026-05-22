@@ -11,7 +11,7 @@ import { DeleteRoomBookingByAlert } from "./shared/DeleteRoomBookingByAlert";
 import { EditRoomInfoByModal } from "./shared/EditRoomInfoByModal";
 import LoadingPage from "@/app/LoadingPage";
 
-const RoomDetailsClient = ({ room }) => {
+const RoomDetailsClient = ({ room, token }) => {
 
   // ✅ Guard check
   if (!room) return <LoadingPage />;
@@ -115,7 +115,7 @@ const RoomDetailsClient = ({ room }) => {
 
         {/* Right Side — ✅ Pass full room object */}
         <div>
-          <BookingCard room={room} />
+          <BookingCard room={room} token={token}  />
         </div>
       </div>
     </div>

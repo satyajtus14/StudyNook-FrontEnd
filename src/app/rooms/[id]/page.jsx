@@ -1,39 +1,42 @@
 
-
-import LoadingPage from "@/app/LoadingPage";
-import ErrorPage from "./ErrorPage";
 import RoomDetailsClient from "@/components/RoomDetailsClient";
+import { getAuthToken } from "@/lib/auth-client";
+import ErrorPage from "./ErrorPage";
 
-
-
-
-
-const RoomDetailsPage = async ({ params,error, reset }) => {
+const RoomDetailsPage = async ({ params }) => {  // ← removed error/reset, not valid here
   const { id } = await params;
 
-  console.log(id);
+  let roomData = null;  // ← declare OUTSIDE try so it's accessible everywhere
 
- 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${id}`);
-  const roomData = await res.json();
-  console.log(roomData);
-
+  try {
    
-    // ✅ Check if the request actually succeeded
-  if (!res.ok) {
-    // const error = new Error("Failed to fetch room data");
-  return <ErrorPage error={error} reset={reset} />;  // Show error page if fetch failed
-}
 
-  // ✅ Check if destination data exists
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${id}`, {
+      headers: {
+       
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      return ("Internal Server Error"); 
+    }
+
+    roomData = await res.json();  // ← assign to outer variable
+
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return <ErrorPage error={{ message: "Something went wrong." }} />;  // ← return early on error
+  }
+
+  // ✅ Now roomData is accessible here
   if (!roomData || !roomData._id) {
     return (
       <h2 className="font-bold text-xl md:text-4xl text-[#244d3f] text-center my-5">
         No Rooms Found!
       </h2>
-    ); // if destination not found
+    );
   }
-
 
 
   return (
@@ -47,7 +50,7 @@ const RoomDetailsPage = async ({ params,error, reset }) => {
        
 
        {/* Pass data down to client component */}
-     <RoomDetailsClient room={roomData} />
+     <RoomDetailsClient room={roomData}  />
         
 
       </div>

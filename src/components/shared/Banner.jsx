@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Banner = () => {
   return (
-    <div className="bg-[url('/assets/Banner.png')] bg-no-repeat bg-cover bg-center text-white  flex justify-between flex-col items-center  gap-5 h-150">
+    <div className="bg-[url('/banner.png')] bg-no-repeat bg-cover bg-center text-white  flex justify-between flex-col items-center  gap-5 h-150">
       <div className="p-10 text-center flex justify-center flex-col items-center gap-3.5 flex-1">
         <h1  className="text-7xl text-blue-500 font-bold">
           Find Your Perfect<span className="text-7xl text-red-500 font-bold"> Study Room</span> 

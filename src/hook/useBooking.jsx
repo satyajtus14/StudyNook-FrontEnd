@@ -20,7 +20,15 @@ const useBooking = (room,user) => {
    // Reusable token getter
    const getAuthHeader = async () => {
     const token = await getAuthToken();
-    console.log("Token:", token); // should print JWT string starting with eyJ...
+    
+  console.log("Token:", token); // should print JWT string starting with eyJ...
+    
+  if (!token) {
+    toast.error("Please login to continue.");
+    router.push("/login");
+    return null;
+  }
+
     return { Authorization: `Bearer ${token}` };
   };
 
@@ -95,11 +103,15 @@ const useBooking = (room,user) => {
     };
     console.log("Booking data to send:", bookingData);
     try {
-       const authHeader = await getAuthHeader(); 
+     const authHeader = await getAuthHeader();
+       if (!authHeader) return;
+       
        
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeader },
+        headers: { "Content-Type": "application/json", 
+          ...authHeader
+         },
         body: JSON.stringify(bookingData),
       });
       
@@ -149,10 +161,14 @@ const useBooking = (room,user) => {
     };
     console.log("Listing data to send:", listingDataByUser);
     try {
-      const authHeader = await getAuthHeader();
+         const authHeader = await getAuthHeader();
+       if (!authHeader) return;
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...authHeader },
+        headers: { "Content-Type": "application/json", 
+          ...authHeader
+        },
         body: JSON.stringify(listingDataByUser),
       });
 

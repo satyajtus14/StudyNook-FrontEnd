@@ -13,10 +13,20 @@ export const authClient = createAuthClient({
 
 })
 
+export const { signIn, signUp, useSession } = authClient
 
-export const { signIn, signUp, useSession } = createAuthClient()
+/* export async function getAuthToken() {
+  try {
+    const { data: token } = await authClient.getToken();
+    console.log("getToken result:", token);
+    return token || null;
+  } catch (err) {
+    console.error("getAuthToken error:", err);
+    return null;
+  }
+} */
 
-//  Robust token getter with fallback
+  //  Robust token getter with fallback
 export async function getAuthToken() {
   try {
     const { data: token } = await authClient.getToken();
@@ -24,7 +34,6 @@ export async function getAuthToken() {
 
     if (token) return token;
 
-    // Fallback — fetch token directly from better-auth endpoint
     const res = await fetch("/api/auth/token", {
       credentials: "include",
     });

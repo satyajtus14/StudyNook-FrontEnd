@@ -206,9 +206,10 @@ const AddRoomClient = () => {
 
             {/* Image URL */}
             <div className="lg:col-span-2 space-y-2">
-              <TextField name="imageUrl" isRequired>
+              <TextField  isRequired>
                 <Label className="text-gray-700 dark:text-gray-300">Image URL</Label>
                 <Input
+                  name="imageUrl"
                   type="url"
                   placeholder="https://example.com/room.jpg"
                   value={imageUrl}
