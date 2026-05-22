@@ -8,13 +8,13 @@ import RoomDetailsClient from "@/components/RoomDetailsClient";
 
 
 
-
 const RoomDetailsPage = async ({ params,error, reset }) => {
   const { id } = await params;
 
   console.log(id);
 
-  const res = await fetch(`http://localhost:5002/rooms/${id}`);
+ 
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${id}`);
   const roomData = await res.json();
   console.log(roomData);
 

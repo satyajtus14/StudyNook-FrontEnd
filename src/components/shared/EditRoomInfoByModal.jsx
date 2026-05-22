@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthToken } from "@/lib/auth-client";
 // import { authClient } from "@/lib/auth-client";
 import {
   Input,
@@ -46,17 +47,20 @@ const router = useRouter()
 
     //Call your API to edit the data in the database here
     try {
+      const token = await getAuthToken();
+       console.log("Token:", token);
+                      
     // 1. Update roomsCollection by roomId
     await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${roomId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(roomInfoCollect),
     });
 
     // 2. Update listingsCollection by listing's own _id
     await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings/${_id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(roomInfoCollect),
     });
 

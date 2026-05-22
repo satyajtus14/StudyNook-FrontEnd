@@ -1,5 +1,5 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
+import { authClient, getAuthToken } from "@/lib/auth-client"; 
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -14,6 +14,8 @@ const MyListingClientPage = ({ initialListings = [] }) => {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
+ 
+
   const [listings, setListings] = useState(initialListings);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,10 +29,22 @@ const MyListingClientPage = ({ initialListings = [] }) => {
     }
 
     const fetchListings = async () => {
+     
+      
+
       try {
+          const token = await getAuthToken(); // ✅ get token
+              console.log("Token:", token);
+
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
-        );
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`, // ✅ /bookings not /listings
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ send token
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
         if (!res.ok) {
           setError("Failed to load listings.");
@@ -67,14 +81,14 @@ const MyListingClientPage = ({ initialListings = [] }) => {
         <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
           My Listings
         </h1>
-        <p className="text-gray-700 mt-1 text-sm sm:text-base">
+        <p className="text-gray-700 mt-1 text-sm sm:text-base dark:text-white">
           Manage and view your listed rooms
         </p>
       </div>
 
       {/* Empty State */}
       {listings.length === 0 && (
-        <p className="text-center font-semibold text-3xl text-gray-700 py-20">
+        <p className="text-center font-semibold text-3xl text-gray-700 py-20 dark:text-white">
           You do not have any Room in list yet.
     
         </p>

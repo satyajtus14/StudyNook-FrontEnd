@@ -1,8 +1,10 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client"; 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { getAuthToken } from "@/lib/auth-client";
 
 
 const useBooking = (room,user) => {
@@ -14,6 +16,14 @@ const useBooking = (room,user) => {
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [error, setError] = useState("");
+
+   // Reusable token getter
+   const getAuthHeader = async () => {
+    const token = await getAuthToken();
+    console.log("Token:", token); // should print JWT string starting with eyJ...
+    return { Authorization: `Bearer ${token}` };
+  };
+
 
   // Convert "HH:MM" to minutes
   const timeToMinutes = (time) => {
@@ -62,6 +72,7 @@ const useBooking = (room,user) => {
 
     return true;
   };
+ 
 
   // Handle booking submission
   const handleBooking = async () => {
@@ -84,9 +95,11 @@ const useBooking = (room,user) => {
     };
     console.log("Booking data to send:", bookingData);
     try {
-      const response = await fetch("http://localhost:5002/bookings", {
+       const authHeader = await getAuthHeader(); 
+       
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/bookings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader },
         body: JSON.stringify(bookingData),
       });
       
@@ -136,9 +149,10 @@ const useBooking = (room,user) => {
     };
     console.log("Listing data to send:", listingDataByUser);
     try {
-      const response = await fetch("http://localhost:5002/listings", {
+      const authHeader = await getAuthHeader();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader },
         body: JSON.stringify(listingDataByUser),
       });
 

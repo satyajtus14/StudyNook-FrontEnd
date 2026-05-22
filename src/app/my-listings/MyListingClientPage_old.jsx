@@ -16,6 +16,8 @@ const MyListingClientPage = ({ initialListings = [] }) => {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
+
+
   const [listings, setListings] = useState(initialListings);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -8,6 +8,7 @@ import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { getAuthToken } from "@/lib/auth-client"; 
 
 import LoadingPage from "../LoadingPage";
 
@@ -31,21 +32,25 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
     }
 
     const fetchBookings = async () => {
-      console.log("=== FETCH DEBUG ===");
-      console.log("user.id:", user.id);
-      console.log(
-        "Full URL:",
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
-      );
+
 
       try {
+        const token = await getAuthToken(); // ✅ get token
+      console.log("Token:", token);
+
         // ?userId= query param, not /bookings/:id
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_SERVER_URL}/listings?userId=${user.id}`,
-        );
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/bookings?userId=${user.id}`, // ✅ /bookings not /listings
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ send token
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
         if (!res.ok) {
-          setError("Failed to load listings.");
+          setError("Failed to load bookings.");
           return;
         }
 
@@ -82,14 +87,14 @@ const MyBookingsClientPage = ({ initialBookings = [] }) => {
       <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">
         My Bookings
       </h1>
-      <p className="text-gray-700 mt-1 mb-8 text-sm sm:text-base">
+      <p className="text-gray-700 mt-1 mb-8 text-sm sm:text-base dark:text-white">
         Manage and view your upcoming study plans
       </p>
 
 
       {/* Empty state */}
       {bookings.length === 0 && (
-        <p className="text-center font-semibold text-3xl text-gray-700 py-20">
+        <p className="text-center font-semibold text-3xl text-gray-700 py-20 dark:text-white">
           You have no study room booking yet.
         </p>
       )}

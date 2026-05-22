@@ -16,7 +16,7 @@ const AvailableAllRoomsPage = async({roomInfo}) => {
             .catch(error => console.error('Error fetching rooms:', error));
     }, []);    */          
 
-    const res = await fetch('http://localhost:5002/rooms');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms`);
     const AllRoomsData = await res.json();
     console.log(AllRoomsData);
 

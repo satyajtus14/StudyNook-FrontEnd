@@ -1,5 +1,6 @@
 "use client";
 
+import { getAuthToken } from "@/lib/auth-client";
 // import { authClient } from "@/lib/auth-client";
 import {AlertDialog, Button} from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -28,12 +29,17 @@ export function DeleteRoomBookingByAlert({ room }) {
       // const {data:tokenData} = await authClient.token()
       //      console.log(tokenData);  
 
-        try {   
+        try { 
+          const token = await getAuthToken();
+                console.log("Token:", token);
+                
+                
         // Call your API Delete from roomsCollection from the database 
          await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/rooms/${roomId}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
             // Authorization: `Bearer ${tokenData?.token}`
           }
         }); 
@@ -42,7 +48,10 @@ export function DeleteRoomBookingByAlert({ room }) {
       // Delete from listingsCollection
       await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/listings/${_id}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
          
       toast.success("Room deleted successfully!");

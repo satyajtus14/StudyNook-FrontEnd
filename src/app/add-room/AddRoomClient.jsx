@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation"; // ✅ remove redirect import
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { getAuthToken } from "@/lib/auth-client"; 
 
 const inputClass =
   "w-full rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white shadow-sm px-4 py-3 outline-none hover:border-olive-400 focus:border-olive-500 transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500";
@@ -38,16 +39,24 @@ const AddRoomClient = () => {
     roomData.userEmail  = user?.email || "No email provided";
     roomData.userImage  = user?.image || null;
 
+  
+
     try {
+      const token = await getAuthToken(); // ✅ get token
+      console.log("Token:", token);
+
       // ── Step 1: POST to /rooms ──────────────────────────────────────────
-      const roomRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(roomData),
-        }
-      );
+   const roomRes = await fetch(
+  `${process.env.NEXT_PUBLIC_SERVER_URL}/rooms`,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`, // ✅ inside headers
+    },
+    body: JSON.stringify(roomData),
+  }
+);
 
       if (!roomRes.ok) {
         toast.error("Failed to add room. Please try again.");
@@ -85,13 +94,16 @@ const AddRoomClient = () => {
       console.log("Listing payload to send:", listingPayload);
 
       const listingRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/listings`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(listingPayload),
-        }
-      );
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/listings`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // ✅ token is already a string, not token?.token
+        },
+        body: JSON.stringify(listingPayload),
+      }
+    );
 
       if (!listingRes.ok) {
         toast.error("Room added but listing failed. Please try again.");
