@@ -3,7 +3,9 @@
 
 <div align="center">
 
-![Logo](path-to-logo) <!-- TODO: Add project logo -->
+<p align="center">
+  <img src="public/studyNook.png" alt="Logo" width="200" />
+</p>
 
 
 **A modern, full-stack web application for efficient [Your Project's Domain, e.g., Task Management/Social Sharing].**
